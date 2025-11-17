@@ -52,6 +52,5 @@ jobs:
         with:
           context: . # Usa el Dockerfile en la raíz
           push: true
-          # Aquí usamos tu nombre "maldonado" y la versión "1.0.1"
-          # ${{ github.repository_owner }} es tu usuario de GitHub
-          tags: ghcr.io/alejandromgt52/maldonado_alejandro:1.0.1
+          # CORRECCIÓN: Usar el nombre del repositorio 'alejandro-maldonado' en el tag.
+          tags: ghcr.io/alejandromgt52/alejandro-maldonado:1.0.1
