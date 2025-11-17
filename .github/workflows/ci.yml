@@ -1,0 +1,57 @@
+name: CI/CD Flask App
+
+on:
+  push:
+    branches: ["maldonado_alejandro"]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout del código
+      uses: actions/checkout@v3
+
+    - name: Configurar Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: "3.10"
+
+    - name: Instalar dependencias
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+
+    - name: Ejecutar tests
+      run: PYTHONPATH=. pytest -v 
+
+  # --- NUEVO JOB PARA CONSTRUIR Y PUBLICAR LA IMAGEN ---
+  build-and-push-image:
+    runs-on: ubuntu-latest
+    # Este job solo se ejecuta si 'build-and-test' fue exitoso
+    needs: build-and-test 
+    
+    # Permisos necesarios para subir la imagen a GitHub Packages
+    permissions:
+      contents: read
+      packages: write 
+
+    steps:
+      - name: Checkout del código
+        uses: actions/checkout@v3
+
+      - name: Loguearse a GitHub Container Registry (ghcr.io)
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          # GITHUB_TOKEN se genera automáticamente por GitHub Actions
+          username: ${{ github.actor }} 
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Construir y pushear la imagen
+        uses: docker/build-push-action@v4
+        with:
+          context: . # Usa el Dockerfile en la raíz
+          push: true
+          # Aquí usamos tu nombre "maldonado" y la versión "1.0.1"
+          # ${{ github.repository_owner }} es tu usuario de GitHub
+          tags: ghcr.io/alejandromgt52/maldonado_alejandro:1.0.1
