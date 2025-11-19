@@ -5,7 +5,7 @@ build:
 	docker build -t pgmaldonado:1.0.1 .
 
 deploy:
-	docker stack deploy --with-registry-auth -c stack.yml doraemon
+	docker stack deploy --with-registry-auth -c stack.yml quintob
 
 rm:
 	docker stack rm doraemon
